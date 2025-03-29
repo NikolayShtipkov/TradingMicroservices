@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrderApi.Data;
 using OrderApi.Models;
@@ -10,10 +11,12 @@ namespace OrderApi.Controllers
     public class OrderController : ControllerBase
     {
         private readonly OrderDbContext _context;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public OrderController(OrderDbContext context)
+        public OrderController(OrderDbContext context, IPublishEndpoint publishEndpoint)
         {
             _context = context;
+            _publishEndpoint = publishEndpoint;
         }
 
         [HttpPost("add/{userId}")]
@@ -24,6 +27,8 @@ namespace OrderApi.Controllers
             order.UserId = userId.ToString();
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
+
+            await _publishEndpoint.Publish(order);
 
             return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
         }
