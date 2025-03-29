@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderApi", "OrderApi\OrderA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortfolioApi", "PortfolioApi\PortfolioApi.csproj", "{DA91CF56-438E-4489-A40E-4E84D2E8773F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PriceApi", "PriceApi\PriceApi.csproj", "{CBCF9B85-CC4F-468D-93BC-3705E6EEE899}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{DA91CF56-438E-4489-A40E-4E84D2E8773F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA91CF56-438E-4489-A40E-4E84D2E8773F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA91CF56-438E-4489-A40E-4E84D2E8773F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBCF9B85-CC4F-468D-93BC-3705E6EEE899}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBCF9B85-CC4F-468D-93BC-3705E6EEE899}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBCF9B85-CC4F-468D-93BC-3705E6EEE899}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBCF9B85-CC4F-468D-93BC-3705E6EEE899}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
