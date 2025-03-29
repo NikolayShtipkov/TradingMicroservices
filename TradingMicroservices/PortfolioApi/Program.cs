@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using OrderApi.Data;
+using PortfolioApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<OrderDbContext>(options =>
+builder.Services.AddDbContext<PortfolioDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 
 builder.Services.AddControllers();
@@ -16,7 +16,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+    var dbContext = scope.ServiceProvider.GetRequiredService<PortfolioDbContext>();
     dbContext.Database.Migrate();
 }
 
