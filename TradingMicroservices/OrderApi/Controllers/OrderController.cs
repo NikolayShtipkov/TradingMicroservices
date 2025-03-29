@@ -20,7 +20,7 @@ namespace OrderApi.Controllers
         }
 
         [HttpPost("add/{userId}")]
-        public async Task<IActionResult> PlaceOrder(Guid userId, [FromBody] Order order)
+        public async Task<IActionResult> PlaceOrder(string userId, [FromBody] Order order)
         {
             if (order == null) return BadRequest("Invalid order data");
 
