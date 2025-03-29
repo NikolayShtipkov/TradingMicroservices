@@ -1,6 +1,9 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using PortfolioApi.Consumers;
 using PortfolioApi.Data;
+using PortfolioApi.Services;
+using PortfolioApi.Services.Abstraction;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,10 +13,12 @@ builder.Services.AddDbContext<PortfolioDbContext>(options =>
 
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumer<OrderCreatedConsumer>(); // Register the consumer
+    x.AddConsumer<OrderConsumer>(); // Register the consumer
 
     x.UsingRabbitMq((context, cfg) =>
     {
+        x.AddConsumer<OrderConsumer>();
+
         cfg.Host("localhost", "/", h =>
         {
             h.Username("guest");
@@ -23,10 +28,12 @@ builder.Services.AddMassTransit(x =>
         // The consumer will listen for the "order-created" event
         cfg.ReceiveEndpoint("order-created-queue", e =>
         {
-            e.ConfigureConsumer<OrderCreatedConsumer>(context);
+            e.ConfigureConsumer<OrderConsumer>(context);
         });
     });
 });
+
+builder.Services.AddTransient<IPortfolioService, PortfolioService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

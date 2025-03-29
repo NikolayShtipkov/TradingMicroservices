@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortfolioApi.Data;
+using PortfolioApi.Services.Abstraction;
 
 namespace PortfolioApi.Controllers
 {
@@ -9,20 +10,18 @@ namespace PortfolioApi.Controllers
     public class PortfolioController : ControllerBase
     {
         private readonly ILogger<PortfolioController> _logger;
-        private readonly PortfolioDbContext _context;
+        private readonly IPortfolioService _service;
 
-        public PortfolioController(ILogger<PortfolioController> logger, PortfolioDbContext context)
+        public PortfolioController(ILogger<PortfolioController> logger, IPortfolioService service)
         {
             _logger = logger;
-            _context = context;
+            _service = service;
         }
 
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetPortfolio(string userId)
         {
-            var portfolio = await _context.Portfolios
-                .Include(p => p.Holdings)
-                .FirstOrDefaultAsync(p => p.UserId == userId);
+            var portfolio = await _service.GetPortfolio(userId);
 
             if (portfolio == null) return NotFound();
 
