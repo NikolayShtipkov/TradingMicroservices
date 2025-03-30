@@ -1,6 +1,7 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using OrderApi.Data;
+using OrderApi.Models;
 using OrderApi.Services;
 using OrderApi.Services.Abstraction;
 
@@ -19,6 +20,23 @@ builder.Services.AddMassTransit(x =>
             h.Username("guest");
             h.Password("guest");
         });
+
+        cfg.UseMessageRetry(r =>
+        {
+            r.Intervals(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
+        });
+
+        cfg.Message<OrderMessage>(e =>
+        {
+            e.SetEntityName("order-exchange");
+        });
+
+        cfg.Publish<OrderMessage>(e =>
+        {
+            e.ExchangeType = "direct";
+        });
+
+        cfg.ConfigureEndpoints(context);
     });
 });
 

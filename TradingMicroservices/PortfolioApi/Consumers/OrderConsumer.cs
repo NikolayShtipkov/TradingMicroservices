@@ -4,7 +4,7 @@ using PortfolioApi.Services.Abstraction;
 
 namespace PortfolioApi.Consumers
 {
-    public class OrderConsumer : IConsumer<Order>
+    public class OrderConsumer : IConsumer<OrderMessage>
     {
         private readonly IPortfolioService _service;
 
@@ -13,21 +13,34 @@ namespace PortfolioApi.Consumers
             _service = service;
         }
 
-        public async Task Consume(ConsumeContext<Order> context)
+        public async Task Consume(ConsumeContext<OrderMessage> context)
         {
-            // Process order and update the portfolio
-            // Example: Add the order to the user's portfolio or update their portfolio value.
-            var order = context.Message;
-            if (order == null)
+            var message = context.Message;
+            if (message == null)
             {
                 return;
             }
 
+            Order order = MapToOrder(message);
+
             await _service.UpsertPortfolio(order);
 
-            Console.WriteLine($"Received Order - User: {order.UserId}, Ticker: {order.Ticker}, Quantity: {order.Quantity}, Side: {order.Side}, Price: {order.Price}");
+            Console.WriteLine($"Received Order - User: {message.UserId}, Ticker: {message.Ticker}, Quantity: {message.Quantity}, Side: {message.Side}, Price: {message.Price}");
 
             // Update portfolio logic (e.g., save to DB)
+        }
+
+        private static Order MapToOrder(OrderMessage order)
+        {
+            return new Order
+            {
+                UserId = order.UserId,
+                Ticker = order.Ticker,
+                Quantity = order.Quantity,
+                Side = order.Side,
+                Price = order.Price,
+                CreatedAt = order.CreatedAt
+            };
         }
     }
 }

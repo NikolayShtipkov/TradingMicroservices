@@ -22,7 +22,7 @@ namespace OrderApi.Controllers
 
             await _service.PlaceOrder(order, userId);
 
-            return CreatedAtAction(nameof(GetOrder), new { uId = userId }, order);
+            return Created();
         }
 
         [HttpGet()]

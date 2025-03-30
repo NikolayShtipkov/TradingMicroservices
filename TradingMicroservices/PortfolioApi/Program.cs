@@ -13,7 +13,7 @@ builder.Services.AddDbContext<PortfolioDbContext>(options =>
 
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumer<OrderConsumer>(); // Register the consumer
+    x.AddConsumer<OrderConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -28,7 +28,17 @@ builder.Services.AddMassTransit(x =>
         {
             e.ConfigureConsumer<OrderConsumer>(context);
         });
+
+        // Add logging
+        cfg.UseMessageRetry(r => r.Intervals(100, 200, 500, 800, 1000));
+        cfg.ConfigureEndpoints(context);
     });
+});
+
+builder.Services.AddLogging(logging =>
+{
+    logging.AddConsole();
+    logging.AddDebug();
 });
 
 builder.Services.AddTransient<IPortfolioService, PortfolioService>();

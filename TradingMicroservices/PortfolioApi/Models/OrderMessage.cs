@@ -1,6 +1,6 @@
 ﻿namespace PortfolioApi.Models
 {
-    public class Order
+    public class OrderMessage
     {
         public int Id { get; set; }
         public string? UserId { get; set; }

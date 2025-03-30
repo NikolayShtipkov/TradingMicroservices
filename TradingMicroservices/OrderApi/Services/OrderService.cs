@@ -10,11 +10,13 @@ namespace OrderApi.Services
     {
         private readonly OrderDbContext _context;
         private readonly IPublishEndpoint _publishEndpoint;
+        private readonly ILogger<OrderService> _logger;
 
-        public OrderService(OrderDbContext context, IPublishEndpoint publishEndpoint)
+        public OrderService(OrderDbContext context, IPublishEndpoint publishEndpoint, ILogger<OrderService> logger)
         {
             _context = context;
             _publishEndpoint = publishEndpoint;
+            _logger = logger;
         }
 
         public async Task PlaceOrder(OrderDto orderDto, string userId)
@@ -22,7 +24,32 @@ namespace OrderApi.Services
             Order order = MapModel(orderDto, userId);
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
-            await _publishEndpoint.Publish(order);
+
+            OrderMessage message = MapToMessage(order);
+
+            try
+            {
+                await _publishEndpoint.Publish<OrderMessage>(message);
+                _logger.LogInformation($"Published order message for user {userId}, ticker {order.Ticker}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to publish order message for user {userId}");
+                throw;
+            }
+        }
+
+        private static OrderMessage MapToMessage(Order order)
+        {
+            return new OrderMessage
+            {
+                UserId = order.UserId,
+                Ticker = order.Ticker,
+                Quantity = order.Quantity,
+                Side = order.Side,
+                Price = order.Price,
+                CreatedAt = order.CreatedAt
+            };
         }
 
         public async Task<Order?> GetOrder(int id)
