@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # RabbitMQ Messaging Port
+      - "15672:15672" # Management UI Port
+    restart: always
+  
+  orderapi:
+    build:
+      context: .
+      dockerfile: OrderApi/Dockerfile
+    container_name: orderapi
+    ports:
+      - "8080:8080"
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  portfolioapi:
+    build:
+      context: .
+      dockerfile: PortfolioApi/Dockerfile
+    container_name: portfolioapi
+    ports:
+      - "8082:8082"
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  priceapi:
+    build:
+      context: .
+      dockerfile: PriceApi/Dockerfile
+    container_name: priceapi
+    ports:
+      - "8084:8084"
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - ASPNETCORE_ENVIRONMENT=Development
