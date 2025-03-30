@@ -1,8 +1,6 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using OrderApi.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using OrderApi.Models;
+using OrderApi.Services.Abstraction;
 
 namespace OrderApi.Controllers
 {
@@ -10,40 +8,34 @@ namespace OrderApi.Controllers
     [Route("[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly OrderDbContext _context;
-        private readonly IPublishEndpoint _publishEndpoint;
+        private readonly IOrderService _service;
 
-        public OrderController(OrderDbContext context, IPublishEndpoint publishEndpoint)
+        public OrderController(IOrderService service)
         {
-            _context = context;
-            _publishEndpoint = publishEndpoint;
+            _service = service;
         }
 
         [HttpPost("add/{userId}")]
-        public async Task<IActionResult> PlaceOrder(string userId, [FromBody] Order order)
+        public async Task<IActionResult> PlaceOrder(string userId, [FromBody] OrderDto order)
         {
             if (order == null) return BadRequest("Invalid order data");
 
-            order.UserId = userId.ToString();
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+            await _service.PlaceOrder(order, userId);
 
-            await _publishEndpoint.Publish(order);
-
-            return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
+            return CreatedAtAction(nameof(GetOrder), new { uId = userId }, order);
         }
 
         [HttpGet()]
         public async Task<IActionResult> GetOrders()
         {
-            var orders = await _context.Orders.ToListAsync();
+            var orders = await _service.GetOrders();
             return Ok(orders);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrder(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _service.GetOrder(id);
             if (order == null) return NotFound();
 
             return Ok(order);
@@ -52,7 +44,7 @@ namespace OrderApi.Controllers
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetUserOrders(string userId)
         {
-            var orders = await _context.Orders.Where(o => o.UserId == userId).ToListAsync();
+            var orders = await _service.GetUserOrders(userId);
             return Ok(orders);
         }
     }

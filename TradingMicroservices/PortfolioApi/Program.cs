@@ -17,8 +17,6 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
-        x.AddConsumer<OrderConsumer>();
-
         cfg.Host("localhost", "/", h =>
         {
             h.Username("guest");
@@ -26,7 +24,7 @@ builder.Services.AddMassTransit(x =>
         });
 
         // The consumer will listen for the "order-created" event
-        cfg.ReceiveEndpoint("order-created-queue", e =>
+        cfg.ReceiveEndpoint("order-queue", e =>
         {
             e.ConfigureConsumer<OrderConsumer>(context);
         });
