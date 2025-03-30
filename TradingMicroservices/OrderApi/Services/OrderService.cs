@@ -22,8 +22,16 @@ namespace OrderApi.Services
         public async Task PlaceOrder(OrderDto orderDto, string userId)
         {
             Order order = MapModel(orderDto, userId);
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                _context.Orders.Add(order);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
 
             OrderMessage message = MapToMessage(order);
 

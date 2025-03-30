@@ -23,9 +23,15 @@ namespace PortfolioApi.Consumers
 
             Order order = MapToOrder(message);
 
-            await _service.UpsertPortfolio(order);
-
-            Console.WriteLine($"Received Order - User: {message.UserId}, Ticker: {message.Ticker}, Quantity: {message.Quantity}, Side: {message.Side}, Price: {message.Price}");
+            try
+            {
+                await _service.UpsertPortfolio(order);
+                Console.WriteLine($"Received Order - User: {message.UserId}, Ticker: {message.Ticker}, Quantity: {message.Quantity}, Side: {message.Side}, Price: {message.Price}");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             // Update portfolio logic (e.g., save to DB)
         }
