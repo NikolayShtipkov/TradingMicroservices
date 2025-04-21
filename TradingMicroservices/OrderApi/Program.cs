@@ -11,34 +11,34 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<OrderDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 
-builder.Services.AddMassTransit(x =>
-{
-    x.UsingRabbitMq((context, cfg) =>
-    {
-        cfg.Host("localhost", "/", h =>
-        {
-            h.Username("guest");
-            h.Password("guest");
-        });
+//builder.Services.AddMassTransit(x =>
+//{
+//    x.UsingRabbitMq((context, cfg) =>
+//    {
+//        cfg.Host("localhost", "/", h =>
+//        {
+//            h.Username("guest");
+//            h.Password("guest");
+//        });
 
-        cfg.UseMessageRetry(r =>
-        {
-            r.Intervals(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
-        });
+//        cfg.UseMessageRetry(r =>
+//        {
+//            r.Intervals(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
+//        });
 
-        cfg.Message<OrderMessage>(e =>
-        {
-            e.SetEntityName("order-exchange");
-        });
+//        cfg.Message<OrderMessage>(e =>
+//        {
+//            e.SetEntityName("order-exchange");
+//        });
 
-        cfg.Publish<OrderMessage>(e =>
-        {
-            e.ExchangeType = "direct";
-        });
+//        cfg.Publish<OrderMessage>(e =>
+//        {
+//            e.ExchangeType = "direct";
+//        });
 
-        cfg.ConfigureEndpoints(context);
-    });
-});
+//        cfg.ConfigureEndpoints(context);
+//    });
+//});
 
 builder.Services.AddTransient<IOrderService, OrderService>();
 
@@ -49,11 +49,11 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
-    dbContext.Database.Migrate();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var dbContext = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+//    dbContext.Database.Migrate();
+//}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
